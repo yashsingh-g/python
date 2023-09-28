@@ -1,9 +1,11 @@
+#step 1- import packages
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-#step 2
+#step 2 import datasets
 data=pd.read_csv('insurance.csv')
+#step 3- prepocess the data
 data.shape
 data.head()
 data.head(10)
@@ -13,7 +15,8 @@ data.columns
 data.info()
 data.describe()
 data.isna().sum()
-##############################################
+#############################################
+#plotting
 sns.heatmap(data.corr(),annot=True)
 #age versus charges
 sns.scatterplot(x=data['age'],y=data['charges'])
@@ -35,66 +38,40 @@ for column in columns:
     data[column]=encoder.fit_transform(data[column])
      
     
- ##########################################   
+###########################################
+#step4-seggregate 
 x=data.drop(['charges'],axis=1)
 y=data['charges']
+x_train=x_train.loc[:,['age','sex','bmi','children','smoker','region']]
+
+x_test=x_test.loc[:,['age','sex','bmi','children','smoker','region']]
+
+#############################################
+#step5-split
 from sklearn.model_selection import train_test_split
 x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.25,random_state=0)
 
 ###################################################
-#create a model
-from sklearn.linear_model import Lasso
-from sklearn.feature_selection import SelectFromModel
-sel=SelectFromModel(Lasso(alpha=0.05))
-sel.fit(x_train,y_train)
-sel.get_support()
-x.columns[sel.get_support()]
-###################################################
-x_train=x_train.loc[:,['age','sex','bmi','children','smoker','region']]
-
-x_test=x_test.loc[:,['age','sex','bmi','children','smoker','region']]
-from sklearn.linear_model import Lasso
-regressor1=Lasso(alpha=0.05)
+#step6-create a model
+from sklearn.linear_model import LinearRegression
+regressor1=LinearRegression()
 regressor1.fit(x_train,y_train)
+
+#step7-get model prdicted value
 regressor1.coef_
 regressor1.intercept_
 y_pred1=regressor1.predict(x_test)
+
 ######################################
+#step8-evaluate the modal performance by using appropriate metrics regression
 from sklearn import metrics
 np.sqrt(metrics.mean_squared_error(y_test, y_pred1))
 
 metrics.mean_absolute_error(y_test, y_pred1)
 metrics.r2_score(y_test,y_pred1)
 
-########################################
-from sklearn.linear_model import Ridge
-regressor2=Ridge(alpha=0.09)
-regressor2.fit(x_train,y_train)
 
-regressor2.coef_
-regressor2.intercept_
 
-y_pred2=regressor2.predict(x_test)
-######################################
-from sklearn import metrics
-np.sqrt(metrics.mean_squared_error(y_test, y_pred2))
-
-metrics.mean_absolute_error(y_test, y_pred2)
-metrics.r2_score(y_test,y_pred2)
-##############################################
-from sklearn.linear_model import ElasticNet
-regressor3=ElasticNet(alpha=0.09)
-regressor3.fit(x_train,y_train)
-
-regressor3.coef_
-regressor3.intercept_
-y_pred3=regressor3.predict(x_test)
-######################################
-from sklearn import metrics
-np.sqrt(metrics.mean_squared_error(y_test, y_pred3))
-
-metrics.mean_absolute_error(y_test, y_pred3)
-metrics.r2_score(y_test,y_pred1)
 
 
 
